@@ -1,5 +1,5 @@
 from rest_framework import permissions
-from .constants import GroupEnum, DrfRequest
+from .utils import GroupEnum, DrfRequest
 
 
 class IsManager(permissions.BasePermission):

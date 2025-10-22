@@ -42,7 +42,7 @@ class Cart(models.Model):
     )  # unit_price * quantity
 
     @staticmethod
-    def _compute_price(unit_price: float, quantity: int):
+    def compute_price(unit_price: float, quantity: int):
         return unit_price * quantity
 
     class Meta:
@@ -73,7 +73,7 @@ class OrderItem(models.Model):
     )  # unit_price * quantity
 
     @staticmethod
-    def _compute_price(unit_price: float, quantity: int):
+    def compute_price(unit_price: float, quantity: int):
         return unit_price * quantity
 
     class Meta:
