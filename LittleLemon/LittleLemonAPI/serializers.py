@@ -13,11 +13,11 @@ class CartInputSerializer(serializers.ModelSerializer):
     """
 
     def validate(self, attrs: dict):
-        if (
-            attrs.get("menu_item")
-            and not MenuItem.objects.filter(id=attrs["menu_item"]).exists()
-        ):
-            raise serializers.ValidationError("Menu item does not exist")
+        menu_item = attrs.get("menu_item")
+        if not menu_item:
+            raise serializers.ValidationError("Menu item is required")
+
+        attrs["unit_price"] = menu_item.price
 
         if self.context.get("user"):
             attrs["user"] = self.context["user"]
@@ -39,12 +39,18 @@ class CartInputSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = "__all__"
-        read_only_fields = ["user"]
+        fields = ["menu_item", "quantity"]
+        read_only_fields = ["user", "unit_price", "price"]
 
 
 class CartRemoveSerializer(serializers.Serializer):
     menu_item = serializers.IntegerField()
+
+
+class CartViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields = "__all__"
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -62,7 +68,36 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ["slug"]
 
+
 class MenuItemSerializer(serializers.ModelSerializer):
+    category = serializers.SlugRelatedField(
+        slug_field="slug", queryset=Category.objects.all()
+    )
+
     class Meta:
         model = MenuItem
         fields = "__all__"
+
+
+class CustomerOrderViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        exclude = ["delivery_crew"]
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = "__all__"
+
+
+class ManagerOrderUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ["status", "delivery_crew"]
+
+
+class DeliveryCrewOrderUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ["status"]

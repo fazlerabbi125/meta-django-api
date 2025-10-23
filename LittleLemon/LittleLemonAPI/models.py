@@ -2,8 +2,20 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
 from django.utils import text, timezone
+from uuid import uuid4
 
 # Create your models here.
+'''
+select_related - Use for ForeignKey and OneToOne
+Use when following single-valued relationships (SQL JOIN).
+
+prefetch_related - Use for ManyToMany and Reverse ForeignKey
+Use when following multi-valued relationships (separate queries + Python joining).
+
+
+Combine Both for Complex Queries
+'''
+
 
 class Category(models.Model):
     title = models.CharField(max_length=255, unique=True)
@@ -12,7 +24,7 @@ class Category(models.Model):
     @staticmethod
     def generate_slug(title: str):
         if not title: return
-        return text.slugify(title[:30]) + "-" + str(int(timezone.now().timestamp()))
+        return text.slugify(title[:30]) + "-" + uuid4().hex[:8]
 
     def __str__(self):
         return self.title
@@ -58,8 +70,10 @@ class Order(models.Model):
     total = models.DecimalField(
         max_digits=6, decimal_places=2, validators=[MinValueValidator(0)]
     )
-    date = models.DateField(default=timezone.now, db_index=True)
-
+    date = models.DateField(default=lambda: timezone.now().date(), db_index=True)
+    
+    class Meta:
+        ordering = ['-date', '-id']
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -72,9 +86,9 @@ class OrderItem(models.Model):
         max_digits=6, decimal_places=2, editable=False
     )  # unit_price * quantity
 
-    @staticmethod
-    def compute_price(unit_price: float, quantity: int):
-        return unit_price * quantity
+    # @staticmethod
+    # def compute_price(unit_price: float, quantity: int):
+    #     return unit_price * quantity
 
     class Meta:
         unique_together = ("order", "menu_item")

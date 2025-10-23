@@ -40,7 +40,7 @@ class MenuItemView(viewsets.ModelViewSet):
     def get_queryset(self):
         query_params = self.request.query_params
         if not query_params:
-            return MenuItem.objects.all()
+            return MenuItem.objects.select_related("category").all()
         filter_dict = dict()
         if "category" in query_params:
             filter_dict["category__title__iexact"] = query_params["category"]
@@ -51,4 +51,4 @@ class MenuItemView(viewsets.ModelViewSet):
                 filter_dict["featured"] = True
             elif query_params["featured"].lower() == "false":
                 filter_dict["featured"] = False
-        return MenuItem.objects.filter(**filter_dict)
+        return MenuItem.objects.select_related("category").filter(**filter_dict)

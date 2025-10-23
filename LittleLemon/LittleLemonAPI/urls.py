@@ -11,7 +11,9 @@ router.register(
 )
 router.register(r"category", CategoryView)
 router.register(r"menu-items", MenuItemView, basename="menu-items")
+router.register(r"orders", OrderView, basename="orders")
 
 urlpatterns = [
     path("", include("djoser.urls")),
+    path("cart/menu-items/", CartView.as_view(), name="cart"),
 ] + router.urls
