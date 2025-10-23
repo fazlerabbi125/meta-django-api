@@ -5,16 +5,35 @@ from django.utils import text, timezone
 from uuid import uuid4
 
 # Create your models here.
-'''
+"""
+By default, Django uses Lazy Loading for related objects and so when you access a related field for the first time, a separate query is executed. Especially if you access related data in a loop, you need optimization.
+
 select_related - Use for ForeignKey and OneToOne
-Use when following single-valued relationships (SQL JOIN).
+It joins tables in a single query (SQL JOIN). Use when following single-valued relationships.
+Example:
+Post.objects.select_related('author')
+-> SELECT post.*, author.* FROM post JOIN author ON post.author_id = author.id
+Post.objects.select_related('author', 'author__profile')
 
 prefetch_related - Use for ManyToMany and Reverse ForeignKey
-Use when following multi-valued relationships (separate queries + Python joining).
+It does a separate lookup for each relationship, and does the 'joining' in Python. Use when following multi-valued relationships.
+Example:
+Post.objects.prefetch_related('comment_set')[:10]
+-> 
+SELECT * FROM post LIMIT 10;
+SELECT * FROM comment WHERE post_id IN (1,2,3,4,5,6,7,8,9,10);
 
+Use Prefetch when you need control over the queryset being prefetched (filtering, ordering, selecting related fields, nested relationships etc.):
+from django.db.models import Prefetch
 
-Combine Both for Complex Queries
-'''
+posts = Post.objects.prefetch_related(
+    Prefetch('comments', queryset=Comment.objects.filter(active=True))
+)
+
+Both optimize query performance and solve the N+1 query problem when working with related models.
+Combine Both for Complex Queries:
+Post.objects.select_related('category').prefetch_related('tags')
+"""
 
 
 class Category(models.Model):
@@ -23,8 +42,9 @@ class Category(models.Model):
 
     @staticmethod
     def generate_slug(title: str):
-        if not title: return
-        return text.slugify(title[:30]) + "-" + uuid4().hex[:8]
+        if not title:
+            return
+        return text.slugify(title[:30]) + "-" + uuid4().hex[:10]
 
     def __str__(self):
         return self.title
@@ -71,9 +91,10 @@ class Order(models.Model):
         max_digits=6, decimal_places=2, validators=[MinValueValidator(0)]
     )
     date = models.DateField(default=lambda: timezone.now().date(), db_index=True)
-    
+
     class Meta:
-        ordering = ['-date', '-id']
+        ordering = ["-date", "-id"]
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
