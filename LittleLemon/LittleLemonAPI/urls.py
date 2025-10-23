@@ -10,6 +10,7 @@ router.register(
     r"groups/delivery-crew/users", DeliveryCrewGroupView, basename="delivery-crew-group"
 )
 router.register(r"category", CategoryView)
+router.register(r"menu-items", MenuItemView, basename="menu-items")
 
 urlpatterns = [
     path("", include("djoser.urls")),

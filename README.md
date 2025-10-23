@@ -49,7 +49,7 @@ Use the Djoser library to implement the following endpoints. Use DRF's built-in 
 | Endpoint                | Role                          | Method | Purpose                                                                 |
 |-------------------------|-------------------------------|--------|-------------------------------------------------------------------------|
 | `/api/users`            | No role required              | POST   | Creates a new user with name, email, and password                       |
-| `/api/users/users/me/`  | Anyone with a valid user token | GET    | Displays the current user                                               |
+| `/api/users/me/`  | Anyone with a valid user token | GET    | Displays the current user                                               |
 | `/token/login/`         | Anyone with valid credentials | POST   | Generates access tokens for use in other API calls                      |
 
 ### Menu-Items Endpoints

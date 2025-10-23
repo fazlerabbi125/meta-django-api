@@ -54,7 +54,7 @@ class Order(models.Model):
     delivery_crew = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, related_name="delivery_crew"
     )
-    status = models.BooleanField(default=0, db_index=True)
+    status = models.BooleanField(default=False, db_index=True)
     total = models.DecimalField(
         max_digits=6, decimal_places=2, validators=[MinValueValidator(0)]
     )

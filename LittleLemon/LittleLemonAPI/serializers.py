@@ -3,6 +3,15 @@ from .models import *
 
 
 class CartInputSerializer(serializers.ModelSerializer):
+    """
+    Method responsibilities:
+    - to_internal_value(): Converts and transforms field values from the input data itself.
+                           Use this for computing/deriving new fields based on other input fields
+                           (e.g., calculating price from unit_price and quantity).
+    - validate(): Handles business logic validation and assigns context-based values
+                  (e.g., user from request context).
+    """
+
     def validate(self, attrs: dict):
         if (
             attrs.get("menu_item")
@@ -52,3 +61,8 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = "__all__"
         read_only_fields = ["slug"]
+
+class MenuItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MenuItem
+        fields = "__all__"

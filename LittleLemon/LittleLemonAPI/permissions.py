@@ -5,7 +5,7 @@ from .utils import GroupEnum, DrfRequest
 class IsManager(permissions.BasePermission):
     # message: str
     # code: int # Default 403
-    
+
     def has_permission(self, request: DrfRequest, view):
         return bool(
             request.user
@@ -24,8 +24,3 @@ class IsDeliveryCrew(permissions.BasePermission):
 class IsCustomer(permissions.BasePermission):
     def has_permission(self, request: DrfRequest, view):
         return bool(request.user and request.user.groups.count() == 0)
-
-
-class IsGuest(permissions.IsAuthenticated):
-    def has_permission(self, request: DrfRequest, view):
-        return not super().has_permission(request, view)
