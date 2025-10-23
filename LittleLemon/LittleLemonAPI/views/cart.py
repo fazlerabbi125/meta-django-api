@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from rest_framework import status, generics, permissions, mixins, exceptions
+from rest_framework import status, generics, permissions, mixins
 from ..utils import DrfRequest
 from ..permissions import IsCustomer
 from ..models import Cart
